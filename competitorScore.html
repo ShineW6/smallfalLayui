@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>参赛者分值</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="plugins/font-awesome/css/font-awesome.min.css" media="all" />
+		<link rel="stylesheet" href="plugins/layui/css/layui.css" media="all" />
+		<link rel="stylesheet" href="css/bootstrap-responsive.min.css" />
+		<link rel="stylesheet" href="css/dataTables.jqueryui.min.css" />
+		<link rel="stylesheet" href="css/global.css" media="all">
+		<link rel="stylesheet" href="css/reset.css" media="all">
+		<link rel="stylesheet" href="css/zxf_page.css" media="all">
+		<style>
+	    	div.search {padding: 30px 0}
+	    	.box {
+				  position: relative;
+				  width: 300px;
+				  margin: 0 auto;
+				}
+	    	input[type="checkbox"]{
+	    		width: 30px;
+	    		height: 30px;
+	    	}
+	    	table th{
+	    		padding: 9px 15px;
+	    		min-height: 20px;]
+	    		line-height: 20px;
+	    		border: 1px solid #E2E2E2;
+	    		font-size: 14px;
+	    	}
+	    	
+			.d7:after {content:"";}
+			.d7 .box {
+			  width: auto;
+			  float: right;
+			  margin-right: 30px;
+			}
+			.d7 input {
+			  width: 250px;
+			  height: 42px;
+			  padding-left: 15px;
+			  border-radius: 42px;
+			  border: 2px solid #324b4e;
+			  /*background: #F9F0DA;*/
+			 background: #FFF;
+			  outline: none;
+			  position: relative;
+			  transition: .3s linear;
+			}
+			.d7 input:focus {
+			  width: 300px;
+			}
+			.d7 button {
+			  width: 42px;
+			  height: 42px;
+			  background: none;
+			  border: none;
+			  position: absolute;
+			  top: -2px;
+			  right: 0;
+			}
+			.d7 button:before{
+			  content: "\f002";
+			  font-family: FontAwesome;
+			  color: #324b4e;
+			}
+			.layui-table th,td{
+				text-align: center;
+			}
+			.right{
+				float: right;
+			}
+	    </style>
+	</head>
+	<body>
+	   <div class="container" style="width:98%;margin: 0 auto;">	
+		 <div style="margin: 15px;">
+		      <span class="layui-breadcrumb">
+				  <a>积分管理</a>
+				  <a>积分查询</a>
+				  <a><cite>参赛者分值</cite></a>
+			  </span>
+		 </div>
+		 
+		 <div class="admin-main">
+		 	 <blockquote class="layui-elem-quote">
+		 	 	<a class="layui-btn" style="visibility: hidden;">
+					&nbsp;&nbsp;
+				</a>
+		 	 	
+				<span class="search d7">
+						<div class="box">
+						  <input type="text" placeholder="搜索从这里开始..." id="search-area">
+						  <button id='search'></button>
+						</div>
+				</span>
+			</blockquote>
+			<fieldset class="layui-elem-field">
+				<legend>数据列表</legend>
+				<div class="layui-field-box">
+				   <div class="tableMarginDiv tableMargin">	
+					<table class="layui-table admin-table" id="competitorScore-table">
+						<thead style="text-align: center;">
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				   </div>
+				</div>
+			</fieldset>
+			 <div class="zxf_pagediv right"></div>		
+		 </div>
+		  <script type="text/javascript" src="js/jquery.min.js"></script>
+		  <script type="text/javascript" src="plugins/layui/layui.js"></script>
+		 <script type="text/javascript" src="js/com.js"></script>
+		 <script type="text/javascript" src="js/zxf_page.js"></script>
+		 <script>
+		 	$(function(){
+				     if($(window).width()<767){
+				     	 $(".tableMarginDiv").removeClass("tableMargin");
+				     	 $(".tableMarginDiv").addClass("table-responsive");
+				     }
+				     $(window).resize(function(){
+				     if($(window).width()<767){
+				     	 $(".tableMarginDiv").removeClass("tableMargin");
+				     	 $(".tableMarginDiv").addClass("table-responsive");
+				     }
+				   });
+				});
+		 </script>
+		 <script>
+		    var competitionId,length = 20, start = 1, search = '',pageNum, thLength;
+		    
+		    $(function pageInit() {
+	            var request = getRequest();
+	            competitionId = request["competitionId"] == null ? "" : request["competitionId"];	
+	            getCompetitorScore(competitionId);
+           });
+        
+		    function getCompetitorScore(competitionId){
+		    	postRemote("platform/scoreServlet.do?flag=getJoinerScore3_4_1", {competitionId:competitionId}, function(data){
+		    		  var competitorScore = JSON.parse(JSON.stringify(data));
+		    		  var thArray = competitorScore.phaseNames;
+                      var thDom = "";
+                      thDom +="<tr><th>姓名</th><th>参赛分</th>";
+                         if(thArray.length>0){
+                         	for (var i=0;i<thArray.length;i++){
+		                      	thDom +="<th>"+thArray[i]+"</th>"; 
+		                      }
+                         }
+                      thDom +="<th>排名分</th><th>比赛系数</th><th>总分</th></tr>"; 
+                      $('#competitorScore-table thead').html(thDom);
+                      renderEventTableData('',1,20);
+		    	});
+		    }
+		 	function renderEventTableData(search,start,length) {
+						
+					layui.use(['layer'], function() {
+								var $ = layui.jquery,
+								layer = layui.layer;
+						        
+						        postRemote("platform/scoreServlet.do?flag=getJoinerScore3_4_1", {"competitionId":competitionId,"search":search,"start":start,"length":length}, function(data){
+						        	var competitorScore = JSON.parse(JSON.stringify(data));
+						        	var tdDom = "";
+						        	
+						        	thLength = competitorScore.phaseNames.length;
+						        	
+						        	for(var i=0;i<competitorScore.data.length;i++){
+						        		tdDom += "<tr><td>"+competitorScore.data[i].name+"</td>";
+						        		tdDom += "<td>"+competitorScore.data[i].compeScore+"</td>";
+							        		for(var g=0;g<thLength;g++){
+							        		  if(competitorScore.data[i].phaseScore[g]===undefined){
+							        		  	 tdDom += "<td>----</td>";
+							        		  }else{
+							        		  	 tdDom += "<td>"+competitorScore.data[i].phaseScore[g]+"</td>";
+							        		  }
+							        		}
+                                        tdDom += "<td>"+competitorScore.data[i].rankScore+"</td>";
+                                        tdDom += "<td>"+competitorScore.data[i].ratio+"</td>";
+                                        tdDom += "<td>"+competitorScore.data[i].sumScore+"</td></tr>";
+						        	}
+						        	$('#competitorScore-table tbody').html(tdDom);
+						        	
+						        	pageNum = Math.ceil(competitorScore.recordsTotal/length);
+						        	
+						        	 $(".zxf_pagediv").createPage({
+												pageNum: pageNum,//总页码
+												current: start,//当前页
+												shownum: length,//每页显示个数
+									//			activepage: "",//当前页选中样式
+									//			activepaf: "",//下一页选中样式
+												backfun: function(e) {
+													start = e.current;
+													search = $('#search-area').val();
+													renderEventTableData(search,start,20);
+												}
+											});
+						   });
+								  
+						    $(document).on('click','#search',function() {
+						    	search = $('#search-area').val();
+					      	    renderEventTableData(search,1,20);
+						   });
+						   
+						    $(document).on('keydown','#search-area',function() {
+						    	if(event.keyCode==13){ 
+					      	     search = $('#search-area').val();
+					      	     renderEventTableData(search,1,20);
+					      	   }
+						   });
+						  
+		 	 });
+		   };
+		 </script>
+	</body>
+</html>

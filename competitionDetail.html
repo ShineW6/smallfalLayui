@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>赛事详情</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no;" />
+		<link rel="stylesheet" href="plugins/layui/css/layui.css" media="all" />
+		<link rel="stylesheet" href="css/webuploader.css" media="all" />
+		<link rel="stylesheet" href="css/global.css" media="all">
+		<link rel="stylesheet" href="css/reset.css" media="all">
+		<style>
+			#compePicture{
+			   max-width: 250px;
+			   max-height: 250px;
+			}
+			
+			.layui-input-inline,.layui-input-block{
+				margin-left: 0px;
+				font-size: 16px;
+				font-weight: bold;
+			}
+			.detail{
+				margin-left: 20px;
+				font-weight: initial;
+			}
+			
+			.hide{display: none;}
+		</style>
+	</head>
+	<body>
+	   <div class="container" style="width: 70%;">	
+		 <div style="margin: 15px;">
+		      <span class="layui-breadcrumb">
+				  <a>赛事</a>
+				  <a><cite>赛事详情</cite></a>
+			  </span>
+		 </div>
+		 
+		 <div class="layui-form" style="margin: 14px;">
+		 	<fieldset class="layui-elem-field">
+		 	<div class="layui-form-item">
+		 		<img id="compePicture" />
+		    </div>	
+		    
+		 	<div class="layui-form-item">
+		 			<div class="layui-input-block" style="margin-top:20px;">
+		 			   赛事名称:
+                     <span class="detail" id="compeName"></span>		 			  
+				    </div>
+		 	</div> 
+		 	
+		 	<div class="layui-form-item">
+		 		    <div class="layui-input-block">
+		 			   主办方:
+                     <span class="detail" id="compeSponsor"></span>		 			  
+				    </div>
+		 	 </div> 
+		 	 
+		 	 <div class="layui-form-item">
+		 	 	   <div class="layui-input-block">
+		 			   承办方:
+                     <span class="detail" id="compeCoSponsor"></span>		 			  
+				    </div>
+		 	 </div> 
+		 	 
+		 	 <div class="layui-form-item">
+		 	 	<div class="layui-input-block">
+		 			   官网地址:
+                     <span class="detail"><a id="compeURL"></a></span>
+                     (点击网址可查看官网信息)
+				    </div>
+		 	 </div> 
+		 	
+		 	<div class="layui-form-item">
+		 		<div class="layui-input-block">
+		 			   所属学校:
+                     <span class="detail" id="compeSchool"></span>		 			  
+				    </div>
+
+		 	</div>   
+		 	
+		    <div class="layui-form-item">
+		    	 <div class="layui-input-block">
+		 			   所属校区:
+                     <span class="detail" id="compeCampus"></span>		 			  
+				    </div>
+		 	 </div> 
+		 	 
+		 	 <div class="layui-form-item">
+				 <div class="layui-input-block">
+		 			   举办地点:
+                     <span class="detail" id="compeAddress"></span>		 			  
+				    </div>
+		 	 </div> 
+		     
+		     <div class="layui-form-item">
+		     	  <div class="layui-input-block">
+		 			  报名时间:
+                     <span class="detail" id="compeEnterStart" style="margin-right: 20px;"></span>
+                     -
+                     <span class="detail" id="compeEnterEnd"></span>
+				  </div>
+		     </div>
+		     
+		     <div class="layui-form-item">
+		     	  <div class="layui-input-block">
+		 			  竞赛时间:
+                     <span class="detail" id="compeStartTime" style="margin-right: 20px;"></span>
+                     -
+                     <span class="detail" id="compeEndTime"></span>
+				  </div>
+		     </div>
+		     
+		     <div class="layui-form-item">
+				 <div class="layui-input-block">
+		 			  竞赛类型:
+                     <span class="detail" id="compeCategoryName"></span>		 			  
+				    </div>
+		 	 </div>
+		 	 
+		 	 <div class="layui-form-item">
+				 <div class="layui-input-block">
+		 			  开通报名:
+                     <span class="detail" id="isEnter"></span>		 			  
+				    </div>
+		 	 </div>
+		 	 
+		 	 <div class="layui-form-item" class="isSingleVote hide">
+				 <div class="layui-input-block">
+		 			 投票:
+                     <span class="detail" id="isSingleVote"></span>		 			  
+				    </div>
+		 	 </div>
+		 	 
+		 	 <div class="layui-form-item">
+				 <div class="layui-input-inline">
+		 			  赛事介绍:
+                     <span class="detail" id="compeIntroduction"></span>		 			  
+				    </div>
+		 	 </div>
+		   </fieldset>
+		 </div>
+		 <script type="text/javascript" src="js/jquery.min.js"></script>
+		 <script type="text/javascript" src="js/webuploader.min.js"></script>
+		 <script type="text/javascript" src="plugins/layui/layui.js"></script>
+		 <script type="text/javascript" src="m-files/bootstrap.js"></script>
+		 <script type="text/javascript" src="js/com.js"></script>
+		 <script type="text/javascript" src="js/underscore-min.js"></script>
+		 <script>
+		 var competitionId;
+		
+		function getCompeDetail() {
+            postRemote("user/competitionServlet.do?flag=getCompeDetail2_2_1", { competitionId: competitionId }, getCompeDetailCallback);
+        }
+        function getCompeDetailCallback(result) {
+            var data = JSON.parse(JSON.stringify(result));
+            $('#compePicture').attr("src",data.compePicture);
+            $('#compeName').html(data.compeName);
+            $('#compeSponsor').html(data.compeSponsor);
+            $('#compeCoSponsor').html(data.compeCoSponsor);
+            $('#compeURL').html(data.compeURL);
+            $('#compeSchool').html(data.compeSchool);
+            $('#compeCampus').html(data.compeCampus);
+            $('#compeAddress').html(data.compeAddress);
+            $('#compeEnterStart').html(data.compeEnterStart);
+            $('#compeEnterEnd').html(data.compeEnterEnd);
+            $('#compeStartTime').html(data.compeStartTime);
+            $('#compeEndTime').html(data.compeEndTime);
+            $('#compeCategoryName').html(data.compeCategory);
+            if(data.isEnter){
+            	$('#isEnter').html("已开通");
+            }else{
+            	$('#isEnter').html("未开通");
+            }
+            
+            if(data.isSingleVote){
+            	$('.isSingleVote').removeClass("hide");
+            	$('#isSingleVote').html("单选投票");
+            }else{
+              	$('.isSingleVote').removeClass("hide");
+            	$('#isSingleVote').html("多选投票");
+            }
+            
+            $('#compeIntroduction').html(data.compeIntroduction);
+            
+            $(document).on('click','#compeURL',function(){
+            	 var URLRexExp = new RegExp(/^[A-Za-z]+:\/\/[A-Za-z0-9-_]+.[A-Za-z0-9-_%&\?\/.:=]+$/);
+            	 if(URLRexExp.test(data.compeURL)){
+            	 	parent.tab.tabAdd({
+												href: data.compeURL , //地址
+												icon: "",
+												title: data.compeName + '-赛事官网'
+											});
+            	 }else{
+            	 	var str = "https://" + data.compeURL;
+            	 	if(URLRexExp.test(str)){
+            	 		parent.tab.tabAdd({
+												href: str , //地址
+												icon: "",
+												title: data.compeName + '-赛事官网'
+											});
+            	 	}else{
+            	 		return false;
+            	 	}
+            	 }
+            });
+            
+        }
+		
+		function doPageInit() {
+            getCompeDetail();
+        }
+		 
+		 $(function pageInit() {
+            var request = getRequest();
+            competitionId = request["competitionId"] == null ? "" : request["competitionId"];
+            doPageInit();
+		 });
+		 </script>
+	</body>
+</html>
+

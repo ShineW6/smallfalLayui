@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>赛事名单</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="plugins/font-awesome/css/font-awesome.min.css" media="all" />
+		<link rel="stylesheet" href="plugins/layui/css/layui.css" media="all" />
+		<link rel="stylesheet" href="css/bootstrap-responsive.min.css" />
+		<link rel="stylesheet" href="css/dataTables.jqueryui.min.css" />
+		<link rel="stylesheet" href="css/global.css" media="all">
+		<link rel="stylesheet" href="css/reset.css" media="all">
+	    <style>
+	    	div.search {padding: 30px 0}
+	    	.box {
+				  position: relative;
+				  width: 300px;
+				  margin: 0 auto;
+				}
+	    	input[type="checkbox"]{
+	    		width: 30px;
+	    		height: 30px;
+	    	}
+	    	table th{
+	    		padding: 9px 15px;
+	    		min-height: 20px;]
+	    		line-height: 20px;
+	    		border: 1px solid #E2E2E2;
+	    		font-size: 14px;
+	    	}
+	    	
+			.d7:after {content:"";}
+			.d7 .box {
+			  width: auto;
+			  float: right;
+			  margin-right: 30px;
+			}
+			.d7 input {
+			  width: 250px;
+			  height: 42px;
+			  padding-left: 15px;
+			  border-radius: 42px;
+			  border: 2px solid #324b4e;
+			  /*background: #F9F0DA;*/
+			 background: #FFF;
+			  outline: none;
+			  position: relative;
+			  transition: .3s linear;
+			}
+			.d7 input:focus {
+			  width: 300px;
+			}
+			.d7 button {
+			  width: 42px;
+			  height: 42px;
+			  background: none;
+			  border: none;
+			  position: absolute;
+			  top: -2px;
+			  right: 0;
+			}
+			.d7 button:before{
+			  content: "\f002";
+			  font-family: FontAwesome;
+			  color: #324b4e;
+			}
+	    </style>
+	</head>
+	<body>
+	   <div class="container" style="width:98%;margin: 0 auto;">	
+		 <div style="margin: 15px;">
+		      <span class="layui-breadcrumb">
+				  <a>赛事</a>
+				  <a><cite>赛事名单</cite></a>
+			  </span>
+		 </div>
+		 
+		 <div class="admin-main">
+		 	 <blockquote class="layui-elem-quote">
+		 	 	<a class="layui-btn" style="visibility: hidden;">
+					&nbsp;&nbsp;
+				</a>
+		 	 	
+				<span class="search d7">
+						<div class="box">
+						  <input type="text" placeholder="搜索从这里开始..." id="search-area">
+						  <button id='search'></button>
+						</div>
+				</span>
+			</blockquote>
+			<fieldset class="layui-elem-field">
+				<legend>数据列表</legend>
+				<div class="layui-field-box">
+				   <div class="tableMarginDiv tableMargin"> 	
+					<table class="layui-table admin-table" id="event-table">
+						<thead>
+							<tr>
+								<th>所属分类</th>
+								<th>标题</th>
+								<th>报名时间</th>
+								<th>竞赛时间</th>
+								<th>详情</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				   </div>
+				</div>
+			</fieldset>
+		 </div>
+		  <script type="text/javascript" src="js/jquery.min.js"></script>
+		  <script type="text/javascript" src="plugins/layui/layui.js"></script>
+		  <script type="text/javascript" src="js/jquery.dataTables.min.js" ></script>
+		 <script type="text/javascript" src="js/com.js"></script>
+		 <script>
+		 	$(function(){
+				     if($(window).width()<767){
+				     	 $(".tableMarginDiv").removeClass("tableMargin");
+				     	 $(".tableMarginDiv").addClass("table-responsive");
+				     }
+				     $(window).resize(function(){
+				     if($(window).width()<767){
+				     	 $(".tableMarginDiv").removeClass("tableMargin");
+				     	 $(".tableMarginDiv").addClass("table-responsive");
+				     }
+				   });
+				});
+		 </script>
+		 <script>
+		 	$(function renderEventTableData() {
+				        var table = $('#event-table').DataTable({
+						"aLengthMenu":[20],
+						"searching":false,//禁用搜索+
+						"lengthChange":false,
+						"paging": true,//开启表格分页
+						"bProcessing" : true,
+						"bServerSide" : true,
+						"bAutoWidth" : false,
+						"sort" : "position",
+						"deferRender":true,//延迟渲染
+						"bStateSave" : false, //在第非首页页刷新页面，会自动到第一页
+						"iDisplayLength" : 20,
+						"iDisplayStart" : 0,
+//						"dom": '<l<\'#topPlugin\'>f>rt<ip><"clear">',
+						"ordering": false,//全局禁用排序
+						
+						      /**
+						       *     表格注释中文
+						       */
+						       	    "oLanguage" : { // 国际化配置
+							"sProcessing" : "正在获取数据，请稍后...",
+							"sLengthMenu" : "显示 _MENU_ 条",
+							"sZeroRecords" : "没有找到数据",
+							"sInfo" : "从 _START_ 到  _END_ 条记录 总记录数为 _TOTAL_ 条",
+							"sInfoEmpty" : "记录数为_TOTAL_",
+							"sInfoFiltered" : "(全部记录数 _MAX_ 条)",
+							"sInfoPostFix" : "",
+							
+							"sUrl" : "",
+							"oPaginate" : {
+				//				"sFirst" : "第一页",
+								"sPrevious" : "<<",
+								"sNext" : ">>",
+				//				"sLast" : "最后一页"
+							}
+						},        
+						       
+						       /*
+						        * 
+				                *  ajax后台数据，  后台服务器接口写好之后用来请求数据 
+				                * 
+				                */
+				                 
+				         
+				                
+						"ajax": {
+				                "type": "POST",
+				                "url":　remoteUrl +"platform/compeJoinServlet.do?flag=getCompeList3_0_1",
+				                 "dataSrc":function(result) {
+				                 var list = JSON.parse(JSON.stringify(result));
+				                 if(list.notLogin){
+				      	           alert("对不起，因为您长时间未操作，服务器已远程断开您的服务，请重新登录帐号");
+									window.open("login.html","_top");
+								}
+				                 return result.competitions;
+				                },  
+				                "data":function(d){
+				                	//数据起始位置，与页码的转换公式。
+				                	d.start=(d.start+d.length)/d.length;  
+				                	d.search = $('#search-area').val();
+				                }
+				        },
+				        
+				                 /*
+						          * 
+				                  *  初始化表格数据
+				                  * 
+				                  */
+				
+						"aoColumns" : [{
+											"mData" : "compeCategory",
+											"orderable" : false, // 禁用排序
+											"sDefaultContent" : "",
+				//							"sWidth" : "10%",
+											
+										}, {
+											"mData" : "compeName",
+											"orderable" : false, // 禁用排序
+											"sDefaultContent" : "",
+											"sWidth" : "20%"
+										}, {
+											"mData" : "compeEnterTimr",
+											"orderable" : false, // 禁用排序
+											"sDefaultContent" : "",
+				//							"sWidth" : "4%"
+										},{
+											"mData" : "compeTime",
+											"orderable" : false, // 禁用排序
+											"sDefaultContent" : "",
+				//							"sWidth" : "10%",
+										},
+										{
+											"mData" : "competitionId",
+											"orderable" : false, // 禁用排序
+											"sDefaultContent" : "",
+				//							"sWidth" : "15%",
+				                            "render" : function(data, type, full, meta) {
+											        return '<a class="layui-btn" id="details" data-competitionId='+data+' data-name='+full.compeName+'>&nbsp;详情&nbsp;</a>';
+											}
+										},{
+											"mData" : "competitionId",
+											"orderable" : false, // 禁用排序
+											"sDefaultContent" : "",
+				//							"sWidth" : "15%",
+				                            "render" : function(data, type, full, meta) {
+											        return '<a class="layui-btn" id="name-list" data-competitionId='+data+' data-name='+full.compeName+'>&nbsp;名单&nbsp;</a>';
+											}
+				
+										}],
+						
+//							"columnDefs" : 
+//										[{
+//											"orderable" : false, // 禁用排序
+//											"targets" : [0], // 指定的列
+//											"data" : "StudentId",
+//											"render" : function(data, type, full, meta) {
+//												return '<input type="checkbox" value="'+ data + '" name="checkList"/>';
+//											}
+//										}],
+						    /**
+					          * 表格加载渲染完毕后执行的方法
+					          * @param data
+					          */
+						
+							initComplete:  function initComplete(data){
+								
+				       },
+				       
+						
+					});
+						   
+						    $(document).on('click','#search',function() {
+					      	     table.ajax.reload();
+						   });
+						   
+						    $(document).on('keydown','#search-area',function() {
+						    	if(event.keyCode==13){ 
+					      	     table.ajax.reload();
+					      	   }
+						   });
+						  
+						$(document).on('click', '#details',function() {
+							       var point = $(this);
+										parent.tab.tabAdd({
+//											href: ipUrl + "shibufangcao/wechat/m-competition/competitiondetail.html?competitionId="+point.attr("data-competitionId")+"", //地址
+											href: "competitionDetail.html?competitionId=" + point.attr("data-competitionId") + "", //地址
+											icon: "",
+											title: point.attr("data-name")
+										});
+						});
+						
+						$(document).on('click', '#name-list',function() {
+							       var point = $(this);
+										parent.tab.tabAdd({
+											href: encodeURI("stageDetails.html?competitionId="+point.attr("data-competitionId")+"&competitionName="+point.attr("data-name")+"--参赛名单"), //地址  encodeURI防止中文乱码s
+											icon: "",
+											title: point.attr("data-name")+"--参赛名单"
+										});
+						});
+				});  
+		 	
+		 </script>
+	</body>
+</html>

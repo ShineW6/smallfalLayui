@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>比赛分值</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="plugins/font-awesome/css/font-awesome.min.css" media="all" />
+		<link rel="stylesheet" href="plugins/layui/css/layui.css" media="all" />
+		<link rel="stylesheet" href="css/bootstrap-responsive.min.css" />
+		<link rel="stylesheet" href="css/dataTables.jqueryui.min.css" />
+		<link rel="stylesheet" href="css/global.css" media="all">
+		<link rel="stylesheet" href="css/reset.css" media="all">
+		<style>
+			body{
+				font-size: 62.5%;
+			}
+			.layui-form-label{
+				font-size: 21px;
+			}
+			.tipspan{
+				font-size: 12px;
+				color: #CCC;
+				margin-left:0px;
+			}
+            
+            .layui-inline{
+            	vertical-align: initial;
+            }
+            				
+			span{
+				font-size: 14px;
+			}
+		    	
+		    table td{
+		    	text-align: center;
+		    }
+		</style>
+	</head>
+	<body>
+	   <div class="container" style="width:98%;margin: 0 auto;">	
+		 <div style="margin: 15px;">
+		      <span class="layui-breadcrumb">
+				  <a>积分管理</a>
+				  <a>积分查询</a>
+				  <a><cite>比赛分值</cite></a>
+			  </span>
+		 </div>
+		 
+		 <div class="admin-main">
+				<div class="layui-field-box">
+				   <div class="tableMarginDiv tableMargin">
+				   	<form class="layui-form">
+				   		<div class="layui-form-item">
+					   	    <div class="layui-inline">
+						       <label class="layui" style="font-size: 16px;font-weight:bold ;">比赛名称：</label><span id="compeName"></span>
+						    </div>
+						    
+						    <div class="layui-inline">
+						       <label class="layui" style="font-size: 16px;font-weight:bold ;margin-left: 45px;">比赛时间：</label><span id="compeTime"></span>
+						    </div>
+						    
+						    <div class="layui-inline">
+						       <label class="layui" style="font-size: 16px;font-weight:bold ;margin-left: 45px;">比赛规模：</label><span id="scale"></span>
+						    </div>
+					   </div>
+					   
+					   <div class="layui-form-item">
+					   	    <div class="layui-inline">
+						       <label class="layui" style="font-size: 16px;font-weight:bold;">比赛标签：</label><span id="compeCategory" class="layui-btn layui-btn-small"></span>
+						    </div>
+						    
+						    <div class="layui-inline">
+						       <label class="layui" style="font-size: 16px;font-weight:bold ;margin-left: 45px;">比赛地址：</label><span id="address"></span>
+						    </div>
+					   </div>
+				   </from>
+				   	  
+				<table class="layui-table admin-table" id="matchScroeList-table">
+					<thead>
+						<th style="font-size:22px" colspan="8">赛程分值</th>
+					</thead>
+					<tbody id='matchScroe-table'>
+					</tbody>
+				</table>
+				
+				<table class="layui-table admin-table" id="frankScoreList-table">
+					<thead>
+						<th style="font-size:22px" colspan="7">决赛排名分值</th>
+					</thead>
+					<tbody id='rankScore-table'>
+					</tbody>
+				</table>
+				   </div>
+				</div>
+		 </div>
+		  <script type="text/javascript" src="js/jquery.min.js"></script>
+		  <script type="text/javascript" src="plugins/layui/layui.js"></script>
+		  <script type="text/javascript" src="js/jquery.dataTables.min.js" ></script>
+		 <script type="text/javascript" src="js/com.js"></script>
+		 <script>
+		    var competitionId;	
+		 	
+		   function matchScroeData(data,obj){
+		   	    var matchScroe = JSON.parse(JSON.stringify(data));
+		   	    if(matchScroe.notLogin){
+		   	    	  alert("对不起，因为您长时间未操作，服务器已远程断开您的服务，请重新登录帐号");
+									window.open("login.html","_top");
+		   	    }
+		   	    
+		   	    var layer = obj.layer;
+		   	    var form = obj.form;
+		   	    var matchScroeDom = '';
+		   	    var rankScoreDom = '';
+		   	    $("#compeName").html(matchScroe.compeName);
+		   	    $("#compeTime").html(matchScroe.compeTime);
+		   	    $("#scale").html(matchScroe.scale);
+		   	    $("#compeCategory").html(matchScroe.compeCategory);
+ 		   	    $("#address").html(matchScroe.address);
+                
+ 		   	    matchScroeDom += "<tr><td>比赛赛程</td><td>参赛分</td><td>总人数</td><td>晋级数</td><td>晋级率</td><td>难度系数</td><td>赛程分值基数</td><td>分数</td></tr>";
+			     
+			     if(matchScroe.phaseScores.length>0){
+			       for (var i=0;i<matchScroe.phaseScores.length;i++)
+						{
+							  matchScroeDom += "<tr>";
+							  matchScroeDom += "<td>"+ matchScroe.phaseScores[i].compePhaseName +"</td>";
+							  matchScroeDom += "<td>"+ matchScroe.phaseScores[i].compeScore +"</td>";
+							  matchScroeDom += "<td>"+ matchScroe.phaseScores[i].personCount +"</td>";
+							  matchScroeDom += "<td>"+ matchScroe.phaseScores[i].promotedCount +"</td>";
+							  matchScroeDom += "<td>"+ matchScroe.phaseScores[i].promotedRatio +"</td>";
+							  matchScroeDom += "<td>"+ matchScroe.phaseScores[i].diffcultDegree +"</td>";
+							  matchScroeDom += "<td>"+ matchScroe.phaseScores[i].phaseBaseScore +"</td>";
+							  matchScroeDom += "<td>"+ matchScroe.phaseScores[i].pahseScore +"</td>";
+							  matchScroeDom += "</tr>";
+						}
+				    }else{
+				    	    matchScroeDom += "<tr><td colspan='8'>暂无比赛信息</td></tr>"; 
+				    }
+                
+                
+                rankScoreDom += "<tr><td>决赛排名总分数基数</td><td>难度系数</td><td>次赛排名总分</td><td>得分人数</td><td>第一名</td><td>第二名</td><td>第三名</td></tr>";
+                   if(matchScroe.rankScore){
+                   	          if(matchScroe.rankScore.rankBaseScore === undefined){
+                   	          	matchScroe.rankScore.rankBaseScore = "----";
+                   	          }
+                   	          if(matchScroe.rankScore.rankScore === undefined){
+                   	          	matchScroe.rankScore.rankScore = "----";
+                   	          }
+                   	          if(matchScroe.rankScore.promotedCount === undefined){
+                   	          	matchScroe.rankScore.promotedCount = "----";
+                   	          }
+                   	          if(matchScroe.rankScore.diffcultDegree === undefined){
+                   	          	matchScroe.rankScore.diffcultDegree = "----";
+                   	          }
+                   	         if(matchScroe.rankScore.scores[0] === undefined){
+                   	          	matchScroe.rankScore.scores[0]  = "----";
+                   	          }
+                   	          if(matchScroe.rankScore.scores[1]  === undefined){
+                   	          	matchScroe.rankScore.scores[1]  = "----";
+                   	          }
+                   	          if(matchScroe.rankScore.scores[2]  === undefined){
+                   	          	matchScroe.rankScore.scores[2]  = "----";
+                   	          }
+                   	          
+							  rankScoreDom += "<tr>";
+							  rankScoreDom += "<td>"+ matchScroe.rankScore.rankBaseScore +"</td>";
+							  rankScoreDom += "<td>"+ matchScroe.rankScore.rankScore +"</td>";
+							  rankScoreDom += "<td>"+ matchScroe.rankScore.promotedCount +"</td>";
+							  rankScoreDom += "<td>"+ matchScroe.rankScore.diffcultDegree +"</td>";
+							  rankScoreDom += "<td>"+ matchScroe.rankScore.scores[0] +"</td>";
+							  rankScoreDom += "<td>"+ matchScroe.rankScore.scores[1] +"</td>";
+							  rankScoreDom += "<td>"+ matchScroe.rankScore.scores[2] +"</td>";
+							  rankScoreDom += "</tr>";
+				    }else{
+				    	    rankScoreDom += "<tr><td colspan='8'>暂无比赛信息</td></tr>"; 
+				    }
+                
+                
+                $("#matchScroe-table").html(matchScroeDom);
+                $("#rankScore-table").html(rankScoreDom);
+		   }
+		   
+		   function getMatchScroe(){
+		 		layui.use(['layer', 'form'], function() {
+				var layer = layui.layer,
+					$ = layui.jquery,
+					form = layui.form();
+					postRemote("platform/scoreServlet.do?flag=getCompeScore3_4_1", {competitionId:competitionId}, matchScroeData ,{"layer":layer,"form":form});
+		 		});
+		 	}
+		   
+		   
+           $(function pageInit() {
+            var request = getRequest();
+            competitionId = request["competitionId"] == null ? "" : request["competitionId"];	
+            getMatchScroe();
+         });
+        
+		 	
+			
+        </script>
+	</body>
+</html>

@@ -1,0 +1,152 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>十步芳草 - 赛事详情</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <meta name="author" content="www.keyweb.cn" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no;" />
+    <link href="../m-files/bootstrap.css" rel="stylesheet" />
+    <link href="../m-files/glide.css" rel="Stylesheet" />
+    <link href="../m-files/style.css" rel="Stylesheet" />
+    <script type="text/javascript" src="../m-files/config.js"></script>
+    <script type="text/javascript" src="../m-files/jquery.min.js"></script>
+    <script type="text/javascript" src="../m-files/bootstrap.js"></script>
+    <script type="text/javascript" src="../m-files/jquery.glide.js"></script>
+</head>
+<body class="grayBg">
+    <div class="competitionBackPositionBox wexinBar" style="background:#f0f0f0">
+        <a href="javascript:window.history.go(-1)" class="back"></a>
+        <div class="title">赛事介绍</div>
+    </div>
+
+    <div id="competitionDetailBox" class="competitionDetailBox weixinPadding">
+        <div class="pictureBox" style="background-image:url();height:auto"></div>
+        <div class="basicBox">
+            <div class="compeNameBox">
+                <span class="compeName"></span>
+                <span class="categoryName"></span>
+            </div>
+            <div class="statusBox">
+                <div class="status"></div>
+                <div class="hasdays"></div>
+            </div>
+            <div class="compeJoinTime">报名时间：</div>
+            <div class="compeTime">竞赛时间：</div>
+            <div class="compeAddress">竞赛地点：</div><a class="map" href="javascript:showMap()"></a>
+        </div>
+        <div class="itemBox" style="padding:0.15rem;padding-top:0.1rem;padding-bottom:0.1rem">
+            <div class="title">主办方</div>
+            <div class="content compeSponsor"></div>
+            <div style="overflow:hidden;margin-left:0.5rem;margin-top:0.1rem;margin-bottom:0.1rem;border-top:1px solid #ccc"></div>
+            <div class="title">承办方</div>
+            <div class="content compeCoSponsor"></div>
+        </div>
+        <div class="itemBox">
+            <a class="link" href="javascript:goTo('audit-competitionintro.html')">赛事介绍</a>
+        </div>
+        <div class="itemBox compeURLBox">
+            <a class="link compeURL">赛事官网</a>
+        </div>
+    </div>
+    <div style="margin-bottom:0.55rem"></div>
+
+    <script type="text/javascript" src="../m-files/com.js"></script>
+    <script type="text/javascript">
+        function getCompeDetail() {
+           postRemote("platform/compeCheckServlet.do?flag=getCompeCheck3_0_1", { compeCheckId: competitionId }, getCompeDetailCallback);
+        }
+        function getCompeDetailCallback(result) {
+            console.log(result);
+            $(".pictureBox").html("<img src='" + result.compePicture + "' style='width:100%'>");
+            $(".compeName").html(result.compeName);
+            $(".categoryName").html(result.compeCategory);
+            $(".compeAddress").html("竞赛地点：" + result.compeAddress);
+            $(".compeTime").html("竞赛时间：" + result.compeStartTime + " ~ " + result.compeEndTime);
+            $(".compeJoinTime").html("报名时间：" + result.compeEnterStart + " ~ " + result.compeEnterEnd);
+            $(".compeURL").attr("href", result.compeURL);
+            if (result.compeURL.indexOf("http") != 0)
+                $(".compeURL").attr("href", "http://" + result.compeURL);
+            $(".compeSponsor").html(nvl(result.compeSponsor, "&nbsp;"));
+            $(".compeCoSponsor").html(nvl(result.compeCoSponsor, "&nbsp;"));
+            mapX = result.compeLongitude;
+            mapY = result.compeLatitude;
+            mapAddress = result.compeAddress;
+            $(".statusBox .status").html(formatCompeStatus(result.compeStatus));
+
+            if (result.remainingDays != 0)
+                $(".hasdays").html("距离报名截止还有" + result.remainingDays + "天");
+
+            if (result.compeURL == null || result.compeURL == "") {
+                $(".compeURLBox").hide();
+            }
+
+            if (result.isEnter == false) {
+                $(".closeCompetition").hide();
+                $(".guanzhuBox").attr("style", "width:100%;");
+                $(".competitionDetailFooterBar .guanzhuBox .guanzhu").attr("style", "margin-left:0.6rem");
+            }
+
+            //var endDate = result.compeEnterEnd.replace("月", "/");
+            //endDate = (new Date()).getFullYear() + "/" + endDate.replace("日", "");
+            //var diffDay = (Math.ceil((new Date(endDate) - new Date()) / 3600 / 1000 / 24));
+
+            //if (diffDay >= 0 && result.compeStatus != 3) {
+            //    $(".hasdays").html("距离报名截止还有" + (diffDay + 1) + "天");
+            //}
+
+            document.title = result.compeName;
+        }
+
+        var mapX, mapY, mapAddress;
+        function showMap() {
+            mapAddress = mapAddress;
+            //window.location.href = "map.html?mapX=" + mapX + "&mapY=" + mapY + "&mapAddress=" + mapAddress;
+
+            window.location.href = 'http://api.map.baidu.com/marker?location=' + mapY + ',' + mapX + '&title=' + mapAddress + '&content=' + mapAddress + '&output=html&src=十步芳草';
+        }
+        function goTo(page) {
+            var request = getRequest();
+
+            window.location.href = page + "?competitionId=" + competitionId;
+        }
+
+        var competitionId, type, redirectUrl, idArr;
+        //页面初始化
+        function pageInit() {
+            var request = getRequest();
+            competitionId = request["competitionId"] == null ? "" : request["competitionId"];
+            type = request["type"] == null ? "" : request["type"];//1报名2签到
+
+            idArr = request["idArr"] ? request["idArr"] : "";
+            if (idArr != "") {
+                var arr = idArr.split("-");
+                if (arr.length == 2) {
+                    type = arr[0];
+                    competitionId = arr[1];
+                }
+            } else {
+                idArr = type + "-" + competitionId;
+            }
+            setCookie("type", type);
+
+
+                doPageInit();
+            //跳转回来后需要做的操作
+        }
+
+        function doPageInit() {
+            getCompeDetail();
+        }
+
+        function goToDynamic() {
+            window.location.href = "competitiondynamiclist.html?idArr=-" + competitionId + "&addShow=" + addShow;
+        }
+
+
+    </script>
+</body>
+</html>

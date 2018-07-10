@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <title>十步芳草 - 我的空间</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <meta name="author" content="www.keyweb.cn" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no;" />
+    <link href="../m-files/bootstrap.css" rel="stylesheet" />
+    <link href="../m-files/glide.css" rel="Stylesheet" />
+    <link href="../m-files/style.css" rel="Stylesheet" />
+    <script type="text/javascript" src="../m-files/jquery.min.js"></script>
+    <script type="text/javascript" src="../m-files/bootstrap.js"></script>
+    <script type="text/javascript" src="../m-files/jquery.glide.js"></script>
+    <style>
+    		h1,.content,.createTime{
+    			text-align: center;
+    			width: 100%;
+    			margin-top: 10px;
+    		}
+    		.img{
+    			max-width: 100%;
+    			display: block;
+    			margin:0 auto;
+    		}
+    </style>
+</head>
+
+<body style="background:#f0f0f0">
+    <h1 class="title"></h1>
+	<img src="" alt=""  class="img"/>
+    <div class="content"></div>
+    <div class="createTime"></div>
+
+    <script type="text/javascript" src="../m-files/com.js"></script>
+    <script type="text/javascript">
+        var noticeId;
+
+        function pageInit() {
+            var request = new getRequest();
+            noticeId = request["noticeId"];
+            postRemote("platform/noticeServlet.do?flag=getOfficialNoticeDetail", {
+                noticeId: noticeId
+            }, function (res) {
+            		$('.title').text(res.title)
+                $('.img').attr('src',res.picture)
+                $('.createTime').text(res.createTime);
+                $('.content').text(res.content);
+            });
+        }
+    </script>
+</body>
+
+</html>

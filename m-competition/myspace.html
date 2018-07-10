@@ -1,0 +1,127 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>十步芳草 - 我的空间</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <meta name="author" content="www.keyweb.cn" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no;" />
+    <link href="../m-files/bootstrap.css" rel="stylesheet" />
+    <link href="../m-files/glide.css" rel="Stylesheet" />
+    <link href="../m-files/style.css" rel="Stylesheet" />
+    <script type="text/javascript" src="../m-files/jquery.min.js"></script>
+    <script type="text/javascript" src="../m-files/bootstrap.js"></script>
+    <script type="text/javascript" src="../m-files/jquery.glide.js"></script>
+</head>
+<body style="background:#f0f0f0">
+    <div class="competitionBackPositionBox" style="border:0;background:#f0f0f0">
+        <a href="javascript:window.history.go(-1)" class="back"></a>
+    </div>
+    <div class="contestantBox">
+        <div class="avatar" style="background-image:url(../m-files/nopic.png)"></div>
+        <div class="name">程茂林</div>
+        <div class="schoolBox">
+            <div class="school">山东师范大学离殇学院</div>
+            <div class="major">应用物理学2015</div>
+        </div>
+    </div>
+    <div class="contestantNumBox">
+        <div class="showNum"><span class="num">3453</span><span>动态</span></div>
+        <div class="collectCount"><span class="num">345</span><span>关注</span></div>
+        <div class="fansCount"><span class="num">565</span><span>粉丝</span></div>
+    </div>
+    <div class="contestantIntroduction">
+        我想玩首付款啦阿萨德飞撒地方问题的分公司阿道夫阿道夫阿打发打发玩儿阿萨德飞我想玩首付款啦阿萨德飞撒地方问题的分公司阿道夫阿道夫阿打发打发玩儿阿萨德飞
+    </div>
+    <div id="historyList">
+
+    </div>
+    <div class="loadBtnBox" style="margin-bottom:0.7rem;margin-top:0.2rem"><input type="button" class="btn btn-blue" onclick="getCompeExperience()" value="加载更多" /></div>
+    <!--<div class="contestantHistoryFooterBar">
+        <a class="guanzhu">关注</a>
+        <a class="fenxiang">分享</a>
+    </div>-->
+    <script type="text/javascript" src="../m-files/com.js"></script>
+    <script type="text/javascript">
+        var userId, competitionId;
+
+        function pageInit() {
+            var request = new getRequest();
+            userId = request["userId"] ? request["userId"] : "34";
+            competitionId = request["competitionId"] ? request["competitionId"] : "42";
+
+            postRemote("user/studentServlet.do?flag=getUserZoneInfo3_0_1", { userId: userId }, getUserZoneInfoCallback);
+
+            getCompeExperience();
+        }
+
+        function getCompeExperience() {
+            $(".loadBtnBox .btn").attr("value", "加载中...");
+            $(".loadBtnBox .btn").attr("disabled", true);
+            pageNum++;
+            postRemote("user/competitionServlet.do?flag=getCompeExperience3_0_1&pageNum=" + pageNum + "&pageSize=" + pageSize, { userId: userId }, getCompeExperienceCallback);
+        }
+
+        var pageNum = 0;
+        var pageSize = 10;
+
+        function getUserZoneInfoCallback(result) {
+            $(".contestantBox .avatar").css("background-image", "url(" + result.avatar + ")");
+            $(".contestantBox .name").html(result.name);
+            $(".contestantBox .school").html(result.school);
+            $(".contestantBox .major").html(result.major + result.grade);
+            $(".showNum .num").html(result.showNum);
+            $(".collectCount .num").html(result.collectCount);
+            $(".fansCount .num").html(result.fansCount);
+            if (result.introduction == null || result.introduction == "")
+                $(".contestantIntroduction").hide();
+            $(".contestantIntroduction").html(result.introduction);
+
+            $(".showNum").attr("onclick", "window.location.href='competitiondynamiclist.html?userId=" + userId + "'");
+            $(".collectCount").attr("onclick", "window.location.href='userlist.html?collectorId=" + userId + "'");
+            $(".fansCount").attr("onclick", "window.location.href='userlist.html?targetId=" + userId + "'");
+        }
+
+        function getCompeExperienceCallback(result) {
+            $(".loadBtnBox .btn").attr("value", "加载更多");
+            $(".loadBtnBox .btn").attr("disabled", false);
+
+            var list = result.competitions;
+
+
+            if (list.length == 0 || list.length < pageSize) {
+                //alert("已经加载全部");
+                $(".loadBtnBox .btn").attr("value", "已经加载全部");
+                $(".loadBtnBox .btn").attr("disabled", true);
+                if (pageNum == 1 && list.length == 0) {
+                    $(".loadBtnBox .btn").attr("value", "0条记录");
+                }
+            }
+
+            var html = "";
+            for (var i = 0; i < list.length; i++) {
+                html += '<div class="dateBox">';
+                html += '<div class="line"><div class="dot"></div></div>';
+                html += '<div class="date">' + nvl(result.createTime) + '</div>';
+                html += '</div>';
+                html += '<div class="historyBox rightArrow" onclick="window.location.href=\'contestanthistory.html?userId=' + userId + '&competitionId=' + competitionId + '\'">';
+                html += '<div class="title">我在参加' + list[i].compeName + '</div>';
+                html += '<div class="phase">进入' + list[i].compePhase + '</div>';
+                if (list[i].showPics) {
+                    html += '<div class="imgList">';
+                    var imglist = list[i].showPics;
+                    for (var j = 0; j < imglist.length; j++) {
+                        html += '<div class="img" style="background-image:url(' + imglist[j] + ')"></div>';
+                    }
+                    html += '</div>';
+                }
+                html += '</div>';
+            }
+            $("#historyList").append(html);
+        }
+    </script>
+</body>
+</html>

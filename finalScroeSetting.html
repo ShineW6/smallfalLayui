@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>总决赛分值设定</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="plugins/font-awesome/css/font-awesome.min.css" media="all" />
+		<link rel="stylesheet" href="plugins/layui/css/layui.css" media="all" />
+		<link rel="stylesheet" href="css/bootstrap-responsive.min.css" />
+		<link rel="stylesheet" href="css/dataTables.jqueryui.min.css" />
+		<link rel="stylesheet" href="css/global.css" media="all">
+		<link rel="stylesheet" href="css/reset.css" media="all">
+		<style>
+			body{
+				font-size: 62.5%;
+			}
+			.layui-form-label{
+				font-size: 21px;
+			}
+			.tipspan{
+				font-size: 12px;
+				color: #CCC;
+				margin-left:0px;
+			}
+		</style>
+	</head>
+	<body>
+	   <div class="container" style="width:98%;margin: 0 auto;">	
+		 <div style="margin: 15px;">
+		      <span class="layui-breadcrumb">
+				  <a>积分管理</a>
+				  <a><cite>总决赛排名分值设置</cite></a>
+			  </span>
+		 </div>
+		 
+		 <div class="admin-main">
+			<fieldset class="layui-elem-field">
+				<legend>数据列表</legend>
+				<div class="layui-field-box">
+				   <div class="tableMarginDiv tableMargin">
+				   	<form class="layui-form">
+				   	  <div class="layui-form-item">
+				   	    <div class="layui-inline">
+					       <label class="layui-form-item" style="font-size: 20px;">总决赛分值设置</label>
+					    </div>
+					   </div>
+				<table class="layui-table admin-table" id="finalScroeList-table">
+				<thead>
+					<th style="font-size: 17px;">设置部分</th>
+					<th style="font-size: 17px;">数值</th>
+					<th style="font-size: 17px;">操作</th>
+				</thead>
+				<tbody id='finalScroetable-Tbody'>
+					<!--<tr>
+						<td>总决赛得分排名<br / ><span class="tipspan">(说明，该比赛前几名可得排名得分，如前三名，前四名...)</span></td>
+                        <td id="getFinalRank"></td>
+                        <td><a class="layui-btn layui-btn-big" id="edit-FinalRank">修改</a></td>
+					</tr>-->
+					<tr>
+						<td>总决赛排名总分基数<br / ><span class="tipspan">(说明，该比赛所有得分排名总共得分，如此比赛前三名可得排名得分，第一名+第二名+第三名=总决赛排名总得分...)</span></td>
+                        <td id="getAllFinalRank"></td>
+                        <td><a class="layui-btn layui-btn-big" id="edit-allFinalRank">修改</a></td>
+					</tr>
+				</tbody>
+				</table>
+				</from>
+				   </div>
+				</div>
+			</fieldset>
+		 </div>
+		  <script type="text/javascript" src="js/jquery.min.js"></script>
+		  <script type="text/javascript" src="plugins/layui/layui.js"></script>
+		  <script type="text/javascript" src="js/jquery.dataTables.min.js" ></script>
+		 <script type="text/javascript" src="js/com.js"></script>
+		 <script>
+		 	var layer;
+		 	function editFinalRankCallback(data,postData){
+		   	             var data = JSON.parse(JSON.stringify(data));
+		   	             if(data.return){
+								 		layer.msg('您已成功修改排名数', {icon: 1});
+			                			 $("#getFinalRank").text(postData.rankCount);
+							 	    }else if(data.notLogin){
+							 	    	layer.msg('您还未登录帐号，请先登录帐号', {icon: 2});
+							 	    }else{
+							 	    	layer.msg('操作失败。', {icon: 2});
+							 	    }
+		            }
+			         
+			        function editAllFinalRankCallback(data,postData){
+		   	             var data = JSON.parse(JSON.stringify(data));
+		   	             if(data.return){
+								 		layer.msg('您已成功修改排名分', {icon: 1});
+                                        $("#getAllFinalRank").text(postData.rankScore);  
+							 	    }else if(data.notLogin){
+							 	    	layer.msg('您还未登录帐号，请先登录帐号', {icon: 2});
+							 	    }else{
+							 	    	layer.msg('操作失败。', {icon: 2});
+							 	    }
+		            }
+		 	
+		   $(function(){
+		   	 layui.use(['layer'], function() {
+			 layer = layui.layer,
+			   	$(document).on('click', '#edit-allFinalRank',function() {
+	                           var con = '<div style="padding:10px;"><input type="text" class="layui-input" name="categoryName" placeholder="排名分" required lay-verify="required" /></div>';
+								      layer.open({
+											type: 1,
+											title: '修改排名分',
+											content: con,
+											btn: ['确定', '取消'],
+											area: ['350px', '175px'],
+											yes: function(index, layero) {
+												var postData = {
+													rankScore: $(layero).find('input[name=categoryName]').val() //标签名
+												}
+												postRemote("platform/scoreConfigServlet.do?flag=setRankScore3_4_1", postData , editAllFinalRankCallback, postData);
+	                                            layer.close(index);
+											},
+											shade :false,
+											maxmin :true
+										});				 		 	
+				   	   	});
+				
+//				 $(document).on('click', '#edit-FinalRank',function() {
+//                         var con = '<div style="padding:10px;"><input type="text" class="layui-input" name="categoryName" placeholder="排名数" required lay-verify="required" /></div>';
+//							      layer.open({
+//										type: 1,
+//										title: '修改排名数',	
+//										content: con,
+//										btn: ['确定', '取消'],
+//										area: ['350px', '175px'],
+//										yes: function(index, layero) {
+//											var postData = {
+//												rankCount: $(layero).find('input[name=categoryName]').val() //标签名
+//											}
+//											postRemote("platform/scoreConfigServlet.do?flag=setRankCount3_4_1", postData , editFinalRankCallback, postData);
+//                                          layer.close(index);
+//										},
+//										shade :false,
+//										maxmin :true
+//									});				 		 	
+//			   	   	});
+			   	});
+		   })
+          		 
+		   function finalScroeData(data,obj){
+		   	    var finalScroe = JSON.parse(JSON.stringify(data));
+		   	    var tableLayer = obj.layer;
+		   	    var tableForm = obj.form;
+		   	    $("#getFinalRank").text(finalScroe.rankCount);
+                $("#getAllFinalRank").text(finalScroe.rankScore);  	   
+		   }
+		   
+		   function getFinalScroe(){
+		 		layui.use(['layer', 'form'], function() {
+				var layer = layui.layer,
+					$ = layui.jquery,
+					form = layui.form();
+					postRemote("platform/scoreConfigServlet.do?flag=getScoreConfig3_4_1", {}, finalScroeData ,{"layer":layer,"form":form});
+		 		});
+		 	}
+		   
+		   
+           $(function pageInit() {
+            	
+            getFinalScroe();
+            
+         });
+        
+		 	
+			
+        </script>
+	</body>
+</html>

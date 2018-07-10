@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>添加用户</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="plugins/font-awesome/css/font-awesome.min.css" media="all" />
+		<link rel="stylesheet" href="plugins/layui/css/layui.css" media="all" />
+		<link rel="stylesheet" href="css/bootstrap-responsive.min.css" />
+		<link rel="stylesheet" href="css/dataTables.jqueryui.min.css" />
+		<link rel="stylesheet" href="css/global.css" media="all">
+		<link rel="stylesheet" href="css/reset.css" media="all">
+	    <style>
+	    	table th{
+	    		padding: 9px 15px;
+	    		min-height: 20px;
+	    		line-height: 20px;
+	    		border: 1px solid #E2E2E2;
+	    		font-size: 14px;
+	    	}
+	    </style>
+	</head>
+	<body>
+	   <div class="container" style="width:98%;margin: 0 auto;">	
+		 <div style="margin: 15px;">
+		      <span class="layui-breadcrumb">
+				  <a>用户权限</a>
+				  <a><cite>添加用户</cite></a>
+			  </span>
+		 </div>
+		 
+		 <div class="admin-main">
+		 	 <blockquote class="layui-elem-quote">
+		 	 	<div class="layui-form">
+				   <div class="layui-inline">
+							 <div class="layui-form-pane" style="margin-top: 15px;">
+								  <div class="layui-form-item">
+									    <div class="layui-input-inline">
+									     	  <input type="text" name="userName" required="required" lay-verify="" placeholder="设置用户名" autocomplete="off" class="layui-input" id="userName">
+									    </div>
+									    <div class="layui-input-inline">
+									     	 <input type="text" name="password" required="required" lay-verify="" placeholder="设置密码" autocomplete="off" class="layui-input" id="password">
+									    </div>
+							 	 </div>
+							</div>      
+				   </div>
+				
+				<a class="layui-btn layui-btn-big layui-btn-normal" id="add-Btn">
+					 &nbsp;添加用户 &nbsp;
+				</a>
+			 </div>
+			</blockquote>
+			<fieldset class="layui-elem-field">
+				<legend>数据列表</legend>
+				<div class="layui-field-box">
+				   <div class="tableMarginDiv tableMargin"> 	
+					<table class="layui-table admin-table" id="user-table">
+						<thead>
+							<tr>
+							<th>用户名</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				   </div>
+				</div>
+			</fieldset>
+		 </div>
+		  <script type="text/javascript" src="js/jquery.min.js"></script>
+		  <script type="text/javascript" src="plugins/layui/layui.js"></script>
+		  <script type="text/javascript" src="js/jquery.dataTables.min.js" ></script>
+		 <script type="text/javascript" src="js/com.js"></script>
+		 <script>
+		 	$(function(){
+				     if($(window).width()<767){
+				     	 $(".tableMarginDiv").removeClass("tableMargin");
+				     	 $(".tableMarginDiv").addClass("table-responsive");
+				     }
+				     $(window).resize(function(){
+				     if($(window).width()<767){
+				     	 $(".tableMarginDiv").removeClass("tableMargin");
+				     	 $(".tableMarginDiv").addClass("table-responsive");
+				     }
+				   });
+				});
+		 </script>
+		 <script>
+		 	function addUserCallback(data,layer){
+		 		var result = JSON.parse(JSON.stringify(data));
+		 		if(result.stateCode==0){
+		 			layer.msg('添加成功', {icon: 1});
+		 		}else if(result.stateCode==1){
+		 			layer.msg('添加失败，账号密码不能为空', {icon: 2});
+		 		}else if(result.stateCode==2){
+		 			layer.msg('添加失败，账号已存在', {icon: 2});
+		 		}else{
+		 			layer.msg('添加失败，未知错误，请联系开发人员', {icon: 2});
+		 		}
+		 	}
+		 	
+		 	$(function renderUserDataTableData() {
+		 		        var startTime,endTime; //定义变量， 列表刷新时上传数据使用
+				        var table = $('#user-table').DataTable({
+						"aLengthMenu":[20],
+						"searching":false,//禁用搜索+
+						"lengthChange":false,
+						"paging": true,//开启表格分页
+						"bProcessing" : true,
+						"bServerSide" : true,
+						"bAutoWidth" : false,
+						"sort" : "position",
+						"deferRender":true,//延迟渲染
+						"bStateSave" : false, //在第非首页页刷新页面，会自动到第一页
+						"iDisplayLength" : 20,
+						"iDisplayStart" : 0,
+//						"dom": '<l<\'#topPlugin\'>f>rt<ip><"clear">',
+						"ordering": false,//全局禁用排序
+						
+						      /**
+						       *     表格注释中文
+						       */
+						       	    "oLanguage" : { // 国际化配置
+							"sProcessing" : "正在获取数据，请稍后...",
+							"sLengthMenu" : "显示 _MENU_ 条",
+							"sZeroRecords" : "没有找到数据",
+							"sInfo" : "从 _START_ 到  _END_ 条记录 总记录数为 _TOTAL_ 条",
+							"sInfoEmpty" : "记录数为_TOTAL_",
+							"sInfoFiltered" : "(全部记录数 _MAX_ 条)",
+							"sInfoPostFix" : "",
+							
+							"sUrl" : "",
+							"oPaginate" : {
+				//				"sFirst" : "第一页",
+								"sPrevious" : "<<",
+								"sNext" : ">>",
+				//				"sLast" : "最后一页"
+							}
+						},        
+						       
+						       /*
+						        * 
+				                *  ajax后台数据，  后台服务器接口写好之后用来请求数据 
+				                * 
+				                */
+				                 
+				         
+				                
+						"ajax": {
+				                "type": "POST",
+				                "url":　remoteUrl +"platform/administratorServlet.do?flag=getAdminList3_0_1",
+				                 "dataSrc":function(result) {
+				                 var list = JSON.parse(JSON.stringify(result));
+				                 if(list.notLogin){
+				      	           alert("对不起，因为您长时间未操作，服务器已远程断开您的服务，请重新登录帐号");
+									window.open("login.html","_top");
+								}
+				                 return result.admins;
+				                },  
+				                "data":function(d){
+				                	//数据起始位置，与页码的转换公式。
+				                	d.start=(d.start+d.length)/d.length;  
+				                }
+				        },
+				        
+							initComplete:  function initComplete(data){
+								
+				       },
+				       
+				       "aoColumns" : [{
+											"mData" : "username",
+											"orderable" : false, // 禁用排序
+											"sDefaultContent" : "",
+											"sWidth" : "20%"
+										}],
+						
+					});
+						     /**
+					          * 表格加载渲染完毕后执行的方法
+					          * @param data
+					          */
+					   
+				   layui.use(['layer','form'], function() {
+						var $ = layui.jquery,
+								form = layui.form(),
+								layer = layui.layer;
+		                 
+		                 $(document).on("click","#add-Btn",function(){
+		                 	 if($('#password').val().length<6){
+		                 	 	layer.msg('密码不能小于6位数', {icon: 2});
+		                 	 }else if($('#password').val().length>15){
+		                 	 	layer.msg('密码不能大于15位数', {icon: 2});
+		                 	 }else{
+		                 	  postRemote("platform/administratorServlet.do?flag=addAdmin3_0_1", {
+		                 	 	userName: $('#userName').val(),
+		                 	 	password: $('#password').val()
+		                 	 }, addUserCallback, layer);
+		                 	 table.ajax.reload();
+		                   }
+		                 	 
+		                 });
+		                
+				  });
+					
+				});  
+		 	
+		 </script>
+	</body>
+</html>

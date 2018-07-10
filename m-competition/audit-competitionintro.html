@@ -1,0 +1,80 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>十步芳草 - 赛事详情</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <meta name="author" content="www.keyweb.cn" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no;" />
+    <link href="../m-files/bootstrap.css" rel="stylesheet" />
+    <link href="../m-files/glide.css" rel="Stylesheet" />
+    <link href="../m-files/style.css" rel="Stylesheet" />
+    <script type="text/javascript" src="../m-files/jquery.min.js"></script>
+    <script type="text/javascript" src="../m-files/bootstrap.js"></script>
+    <script type="text/javascript" src="../m-files/jquery.glide.js"></script>
+</head>
+<body class="">
+
+    <div class="competitionBackPositionBox" style="background:#f0f0f0">
+        <a href="javascript:window.history.go(-1)" class="back"></a>
+        <div class="title">赛事介绍</div>
+    </div>
+
+    <div id="competitionIntroBox" style="background:#fff;margin-top:0.4rem;padding:0.15rem">
+        <div id="title" style="font-size:0.2rem"></div>
+        <div id="time" style="font-size:0.12rem;color:#999"></div>
+        <div id="content" style="font-size:0.14rem"></div>
+    </div>
+    
+    <!-- 登录模态框（Modal） -->
+    <div class="modal fade" id="teacherLoginModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form action="user/loginRegisterServlet.do?flag=login2_2_1" method="post" id="teacherLoginForm">
+                <div class="modal-content" style="border:0px;">
+                    <div class="modal-header" style="">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="myModalLabel" style="">导师登录</h4>
+                    </div>
+                    <div class="modal-body">
+                        <label class="inputLabel" for="UserName">用户名</label><input type="text" id="UserName" name="UserName" placeholder="请输入用户名" />
+                        <label class="inputLabel" for="Password">密码</label><input type="password" id="Password" name="Password" placeholder="请输入密码" />
+                        <div class="rememberBox"><input type="checkbox" id="rememberPassword" name="rememberPassword" checked="checked" /><label for="rememberPassword">记住密码</label></div>
+                    </div>
+                    <div class="modal-footer" style="text-align: center;">
+                        <button type="button" class="btn btn-primary loginBtn" onclick="doTeacherLogin()">登录</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="moreBox" style="display:none"><input class="btn btn-primary" value="报名" onclick="joinProject()" /></div>
+    <script type="text/javascript" src="../m-files/com.js"></script>
+    <script type="text/javascript">
+     
+        var competitionId;
+        function getCompeDetail() {
+            var request = getRequest();
+            competitionId = request["competitionId"] == null ? "" : request["competitionId"];
+            postRemote("platform/compeCheckServlet.do?flag=getCompeCheck3_0_1", { compeCheckId: competitionId }, getCompeDetailCallback);
+        }
+
+        function getCompeDetailCallback(result) {
+        	console.log(competitionId);
+            console.log(result.compeIntroduction);
+            $("#competitionIntroBox #title").html(nvl(result.compeName, "&nbsp;"));
+            $("#competitionIntroBox #time").html(nvl(result.compeCreateTime, "&nbsp;"));
+            $("#competitionIntroBox #content").html(nvl(result.compeIntroduction, "&nbsp;"));
+        }
+
+       
+        //页面初始化
+        function pageInit() {
+            getCompeDetail();
+        }
+    </script>
+</body>
+</html>
